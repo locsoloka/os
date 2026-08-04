@@ -1,19 +1,25 @@
 ENTRY(_start)
 
+MEMORY
+{
+    ram (rwx) : ORIGIN = 0x00100000, LENGTH = 16M
+}
+
 SECTIONS
 {
-    . = 1M;
+    . = ORIGIN(ram);
 
-    .text : {
+    .text : AT(ORIGIN(ram)){
         *(.text)
-    }
+    } > ram
     .rodata : {
-        *(.rodata)
-    }
+        *(.rodata*)
+    } > ram
     .data : {
-        *(.data)
-    }
+        *(.data*)
+    } > ram
     .bss : {
-        *(.bss)
-    }
+        *(.bss*)
+        *(.COMMON)
+    } > ram
 }

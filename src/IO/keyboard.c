@@ -33,3 +33,4 @@ unsigned char get_char(void)
     unsigned char ch = scancode_to_ascii();
     return ch;
 }
+
