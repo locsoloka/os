@@ -1,3 +1,6 @@
+#include "../grapics/screen.h"
+#include <stdbool.h>
+
 const char scancode_to_ascii_map[] = {
     0,   27, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b',
   '\t', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n',
@@ -28,9 +31,32 @@ unsigned char scancode_to_ascii(void)
 //    }
 }
 
-unsigned char get_char(void)
+char get_char(void)
 {
     unsigned char ch = scancode_to_ascii();
     return ch;
+}
+
+void kfscan(char *buf, int cursor)
+{
+    buf[0] = 'A';
+    int i = 0;
+    while (true)
+    {
+        
+        char ch = get_char();
+        buf[i] = ch;
+        if (buf[i] == '\n')
+        {
+            buf[i + 1] = '\0';
+            return;
+        }
+        else
+        {
+            cursor = kprint_ch(ch, cursor);
+        }
+        i++;
+    }
+    return;
 }
 

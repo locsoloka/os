@@ -1,5 +1,7 @@
 #include "IO/keyboard.h"
 
+#include "memory_managment/memory_allocator.h"
+
 #include "grapics/screen.h"
 
 void kernel_main(void) {
@@ -14,8 +16,10 @@ void kernel_main(void) {
     
     cursor = kprint(msg, cursor);
     cursor = kline_break(cursor);
-    unsigned char usr_I = get_char();
 
-    vga[cursor * 2] = usr_I;
-    vga[cursor * 2 + 1] = 0x0F;
+    char *buffer = kstack_alloc(128);
+
+    kfscan(buffer, cursor);
+    cursor = kline_break(cursor);
+    cursor = kprint(buffer, cursor);
 }

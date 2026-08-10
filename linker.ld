@@ -21,5 +21,7 @@ SECTIONS
     .bss : {
         *(.bss*)
         *(.COMMON)
+        . = ALIGN(4); /* 4 bájtos igazítás a biztonság kedvéért */
+        _end = .;    /* <-- EZ A KULCS! Itt ér véget az összes statikus adat! */
     } > ram
 }

@@ -25,6 +25,16 @@ int kprint(char *text, int cursor)
     return cursor;
 }
 
+int kprint_ch(char text, int cursor)
+{
+    volatile char* vga = (volatile char*) 0xB8000;
+
+    vga[cursor * 2] = text;
+    vga[cursor * 2 + 1] = 0x0F;
+    cursor++;
+    return cursor;
+}
+
 int kline_break(int cursor)
 {
     if (cursor >= (COL * (ROW - 1)) + 1)

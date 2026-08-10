@@ -1,1 +1,2 @@
-unsigned char get_char(void);
+char get_char(void);
+char kfscan(char *buf, int cursor);
