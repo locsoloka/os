@@ -1,6 +1,7 @@
 #include "../grapics/screen.h"
 #include <stdbool.h>
 
+
 const char scancode_to_ascii_map[] = {
     0,   27, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b',
   '\t', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n',
@@ -25,10 +26,11 @@ unsigned char read_keyboard_scancode(void)
 unsigned char scancode_to_ascii(void)
 {
     unsigned char scancode = read_keyboard_scancode();
-//    if (scancode < sizeof(scancode_to_ascii_map))
-//    {
+    if (scancode < sizeof(scancode_to_ascii_map))
+    {
         return scancode_to_ascii_map[scancode];
-//    }
+    }
+    return '\0';
 }
 
 char get_char(void)
@@ -37,7 +39,10 @@ char get_char(void)
     return ch;
 }
 
-void kfscan(char *buf, int cursor)
+volatile char* vga = (volatile char*) 0xB8000;
+
+
+int kfscan(char *buf, int cursor)
 {
     buf[0] = 'A';
     int i = 0;
@@ -48,15 +53,20 @@ void kfscan(char *buf, int cursor)
         buf[i] = ch;
         if (buf[i] == '\n')
         {
-            buf[i + 1] = '\0';
-            return;
+            buf[i] = '\0';
+            i++;
+            return cursor;
+        }
+        else if (buf[i] == '\0')
+        {
+
         }
         else
         {
             cursor = kprint_ch(ch, cursor);
+            i++;
         }
-        i++;
     }
-    return;
+    return cursor;
 }
 
