@@ -1,9 +1,11 @@
-#ifndef BMP_H_DEFINED
-#define BMP_H_DEFINED
+#ifndef SCREEN_H_DEFINED
+#define SCREEN_H_DEFINED
+
+void grapics_init(void);
 
 void clear_screen(void);
-int kprint(char *text, int cursor);
-int kprint_ch(char text, int cursor);
-int kline_break(int cursor);
+void kprint(char *text);
+void kprint_ch(char text);
+void kline_break(void);
 
 #endif

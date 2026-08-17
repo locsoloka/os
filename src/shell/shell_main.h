@@ -1,1 +1,1 @@
-void execute_command(int argc, char *argv[], int cursor);
+void execute_command(int argc, char *argv[]);

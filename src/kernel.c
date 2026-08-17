@@ -7,25 +7,21 @@
 #include "shell/shell_main.h"
 
 void kernel_main(void) {
-    int cursor = 0;
-
-    volatile char* vga = (volatile char*) 0xB8000;
-
-
+    grapics_init();
     clear_screen();
     
     char* msg = "Tirpak OS";
-    
-    cursor = kprint(msg, cursor);
-    cursor = kline_break(cursor);
+
+    kprint(msg);
+    kline_break();
 
     char *buffer = kstack_alloc(128);
 
-    kfscan(buffer, cursor);
-    cursor = kline_break(cursor);
-    cursor = kprint(buffer, cursor);
+    kfscan(buffer);
+    kline_break();
+    kprint("fasz");
 
     char *test[] = {"clear"};
 
-    execute_command(1, test, cursor);
+    execute_command(1, test);
 }

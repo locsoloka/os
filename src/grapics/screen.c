@@ -1,6 +1,13 @@
 #define ROW 25
 #define COL 80
 
+static int cursor;
+
+void grapics_init(void)
+{
+    cursor = 0;
+}
+
 void clear_screen(void)
 {
     volatile char* vga = (volatile char*) 0xB8000;
@@ -12,7 +19,7 @@ void clear_screen(void)
     }
 }
 
-int kprint(char *text, int cursor)
+void kprint(char *text)
 {
     volatile char* vga = (volatile char*) 0xB8000;
 
@@ -22,20 +29,18 @@ int kprint(char *text, int cursor)
         vga[cursor * 2 + 1] = 0x0F;
         cursor++;
     }
-    return cursor;
 }
 
-int kprint_ch(char text, int cursor)
+void kprint_ch(char text)
 {
     volatile char* vga = (volatile char*) 0xB8000;
 
     vga[cursor * 2] = text;
     vga[cursor * 2 + 1] = 0x0F;
     cursor++;
-    return cursor;
 }
 
-int kline_break(int cursor)
+void kline_break(void)
 {
     if (cursor >= (COL * (ROW - 1)) + 1)
     {
@@ -46,5 +51,4 @@ int kline_break(int cursor)
     {
         cursor += COL - (cursor % COL);
     }
-    return cursor;
 }

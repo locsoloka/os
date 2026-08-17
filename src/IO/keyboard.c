@@ -42,7 +42,7 @@ char get_char(void)
 volatile char* vga = (volatile char*) 0xB8000;
 
 
-int kfscan(char *buf, int cursor)
+void kfscan(char *buf)
 {
     buf[0] = 'A';
     int i = 0;
@@ -55,7 +55,7 @@ int kfscan(char *buf, int cursor)
         {
             buf[i] = '\0';
             i++;
-            return cursor;
+            return;
         }
         else if (buf[i] == '\0')
         {
@@ -63,10 +63,9 @@ int kfscan(char *buf, int cursor)
         }
         else
         {
-            cursor = kprint_ch(ch, cursor);
+            kprint_ch(ch);
             i++;
         }
     }
-    return cursor;
 }
 

@@ -22,23 +22,22 @@ static const command_t cmd_table[] =
   {NULL,    NULL,      NULL}
 };
 
-void execute_command(int argc, char *argv[], int cursor)
+void execute_command(int argc, char *argv[])
 {
-  cursor = kprint("fasz", cursor);
   if (argc == 0 || argv == NULL)
   {
-    cursor = kprint("NULL", cursor);
+    kprint("NULL");
     return;
   }
   for (int i = 0; cmd_table[i].func != NULL; i++)
   {
     if (strcmp(cmd_table[i].name, argv[0]) == 0)
     {
-      cursor = kprint(cmd_table[i].name, cursor);
+      kprint(cmd_table[i].name);
       cmd_table[i].func(argc, argv);
       return;
     }
   }
-  kprint("Command not found", cursor);
+  kprint("Command not found");
   return;
 }
