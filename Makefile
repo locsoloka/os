@@ -1,4 +1,4 @@
-C_SOURCES = $(wildcard src/*.c) $(wildcard src/*/*.c) 
+C_SOURCES = $(wildcard src/*.c) $(wildcard src/*/*.c) $(wildcard src/*/*/*.c) $(wildcard src/*/*/*/*.c)
 OBJ = boot.o $(C_SOURCES:.c=.o)
 
 CC = gcc

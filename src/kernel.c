@@ -4,6 +4,8 @@
 
 #include "grapics/screen.h"
 
+#include "shell/shell_main.h"
+
 void kernel_main(void) {
     int cursor = 0;
 
@@ -22,4 +24,8 @@ void kernel_main(void) {
     kfscan(buffer, cursor);
     cursor = kline_break(cursor);
     cursor = kprint(buffer, cursor);
+
+    char *test[] = {"clear"};
+
+    execute_command(1, test, cursor);
 }
