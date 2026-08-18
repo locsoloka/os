@@ -1,10 +1,9 @@
 #include "IO/keyboard.h"
-
 #include "memory_managment/memory_allocator.h"
-
 #include "grapics/screen.h"
-
 #include "shell/shell_main.h"
+#include "shell/shell_helpers.h"
+
 
 void kernel_main(void) {
     grapics_init();
@@ -19,9 +18,10 @@ void kernel_main(void) {
 
     kfscan(buffer);
     kline_break();
-    kprint("fasz");
 
-    char *test[] = {"clear"};
+    int argc = 0;
 
-    execute_command(1, test);
+    tokenize(buffer, &argc);
+
+    execute_command(1, &buffer);
 }
