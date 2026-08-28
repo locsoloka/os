@@ -39,5 +39,6 @@ void execute_command(int argc, char *argv[])
     }
   }
   kprint("Command not found");
+  kline_break();
   return;
 }

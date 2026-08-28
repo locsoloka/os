@@ -3,6 +3,8 @@
 
 static int cursor;
 
+void kline_break(void); 
+
 void grapics_init(void)
 {
     cursor = 0;
@@ -25,19 +27,33 @@ void kprint(char *text)
 
     for (int i = 0; text[i] != '\0'; i++)
     {
-        vga[cursor * 2] = text[i];
-        vga[cursor * 2 + 1] = 0x0F;
-        cursor++;
+        if (text[i] == '\n')
+        {
+            kline_break();
+        }
+        else
+        {
+            vga[cursor * 2] = text[i];
+            vga[cursor * 2 + 1] = 0x0F;
+            cursor++;
+        }
     }
 }
 
 void kprint_ch(char text)
 {
     volatile char* vga = (volatile char*) 0xB8000;
-
-    vga[cursor * 2] = text;
-    vga[cursor * 2 + 1] = 0x0F;
-    cursor++;
+    if (text == '\n')
+    {
+        kline_break();
+    }
+    else if (text > 32 && text < 128)
+    {
+        vga[cursor * 2] = text;
+        vga[cursor * 2 + 1] = 0x0F;
+        cursor++;
+        cursor++;
+    }
 }
 
 void kline_break(void)

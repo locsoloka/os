@@ -16,7 +16,7 @@ myos.bin: $(OBJ)
 	ld -m elf_i386 -T linker.ld -o myos.bin $(OBJ)
 
 run: myos.bin
-	qemu-system-i386 -kernel myos.bin
+	qemu-system-i386 -kernel myos.bin -hda disk.img
 
 clean:
 	rm -f *.o myos.bin
