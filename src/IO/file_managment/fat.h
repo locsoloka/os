@@ -1,7 +1,7 @@
 #include <stdint.h>
-#include "../../grapics/screen.h"
 
 #pragma pack(push, 1)
+
 typedef struct
 {
     uint8_t  jump_code[3];          // Ugró utasítás az OS boot kódra (pl. 0xEB 0x3C 0x90)
@@ -32,6 +32,7 @@ typedef struct
     uint8_t  boot_code[448];        // Bootloader kód helye (ha bootolható lemez)
     uint16_t boot_sector_signature;// Boot szektor aláírás (mindig 0xAA55)
 } fat16_boot_sector_t;
+
 #pragma pack(pop)
 
 #pragma pack(push, 1)
@@ -47,51 +48,7 @@ typedef struct {
 } fat16_entry_t;
 #pragma pack(pop)
 
-#include "ata_drivers.h"
-#include "../../memory_managment/memory_allocator.h"
+void file_init(void);
+void find_LBA(void);
+void file_lookup(void);
 
-static uint8_t first_cluster_buffer[512];
-
-static uint32_t fat_lba;
-static uint32_t root_dir_lba;
-static uint32_t root_dir_sectors;
-static uint32_t data_lba;
-
-void file_init()
-{
-    ata_read_sector(0, first_cluster_buffer);
-    fat16_boot_sector_t *cluster_ptr = (fat16_boot_sector_t *) first_cluster_buffer;
-    
-    fat_lba = cluster_ptr->reserved_sectors;
-    root_dir_lba = fat_lba + (cluster_ptr->fat_count * cluster_ptr->sectors_per_fat);
-    root_dir_sectors = (cluster_ptr->root_entry_count * 32) / cluster_ptr->bytes_per_sector;
-    data_lba = root_dir_lba + root_dir_sectors;
-
-    kprint_ch(int_to_char(cluster_ptr->reserved_sectors));
-}
-
-void find_LBA()
-{
-    uint8_t *data_cluster = kstack_alloc(512);
-    ata_read_sector(fat_lba, data_cluster);
-
-    kline_break();
-    kprint("find LBA");
-    for  (int i = 0; i < 512; i++)
-    {
-        kprint_ch(data_cluster[i]);
-    }
-    
-}
-
-void file_lookup()
-{
-    static uint8_t data_cluster[512] __attribute__((aligned(4)));
-    ata_read_sector(root_dir_lba, data_cluster);
-
-    kline_break();
-    for  (int i = 0; i < 512; i++)
-    {
-        kprint_ch_raw(data_cluster[i]);
-    }
-}

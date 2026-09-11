@@ -6,6 +6,7 @@
 #include "shell/shell_main.h"
 #include "shell/shell_helpers.h"
 #include "IO/file_managment/ata_drivers.h"
+#include "IO/file_managment/fat.h"
 
 int argc = 0;
 
@@ -18,26 +19,27 @@ void kernel_main(void) {
     kprint(msg);
     kline_break();
 
-    uint8_t *buffer = kstack_alloc(256);
+    uint8_t *sector_buffer = kstack_alloc(512);
 
-    ata_read_sector(1, buffer);
+    ata_read_sector(0, sector_buffer);
 
-    // ata_write_sector(1, "Ciagnyokat verem");
+    fat16_boot_sector_t *bs = (fat16_boot_sector_t *)sector_buffer;
 
-    for  (int i = 0; i < 256; i++)
+    uint32_t fat_lba = bs->reserved_sectors;
+    uint32_t root_dir_lba = fat_lba + (bs->fat_count * bs->sectors_per_fat);
+    uint32_t root_dir_sectors = (bs->root_entry_count * 32) / bs->bytes_per_sector;
+    uint32_t data_lba = root_dir_lba + root_dir_sectors;
+
+    for  (int i = 0; i < 512; i++)
     {
-        kprint_ch(buffer[i]);
+        kprint_ch(sector_buffer[i]);
     }
-    
     
     kline_break();
     kprint("Read end");
-    //while (true)
-    //{
-    //    kfscan(buffer);
-    //    kline_break();
-//
-    //    tokenize(buffer, &argc);
-    //    execute_command(1, &buffer);
-    //}
+    kline_break();
+    file_init();
+    kprint("file_init");
+    find_LBA();
+    file_lookup();
 }

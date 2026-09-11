@@ -40,6 +40,20 @@ void kprint(char *text)
     }
 }
 
+void kprint_raw(char *text)
+{
+    volatile char* vga = (volatile char*) 0xB8000;
+
+    for (int i = 0; text[i] != '\0'; i++)
+    {
+        vga[cursor * 2] = text[i];
+        vga[cursor * 2 + 1] = 0x0F;
+        cursor++;
+    }
+}
+
+
+
 void kprint_ch(char text)
 {
     volatile char* vga = (volatile char*) 0xB8000;
@@ -52,8 +66,15 @@ void kprint_ch(char text)
         vga[cursor * 2] = text;
         vga[cursor * 2 + 1] = 0x0F;
         cursor++;
-        cursor++;
     }
+}
+
+void kprint_ch_raw(char text)
+{
+    volatile char* vga = (volatile char*) 0xB8000;
+    vga[cursor * 2] = text;
+    vga[cursor * 2 + 1] = 0x0F;
+    cursor++;
 }
 
 void kline_break(void)
@@ -67,4 +88,14 @@ void kline_break(void)
     {
         cursor += COL - (cursor % COL);
     }
+}
+
+char int_to_char(int number)
+{
+    // if (number >= 48 && number <= 57)
+    // {
+    //     char ch = number + 48;
+    //     return ch;
+    // }    
+    return number + 48;
 }
