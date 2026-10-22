@@ -42,4 +42,13 @@ void kernel_main(void) {
     kprint("file_init");
     find_LBA();
     file_lookup();
+    char *buffer = kstack_alloc(128);
+    while (true)
+    {
+        kfscan(buffer);
+        kline_break();
+        tokenize(buffer, &argc);
+        execute_command(1, &buffer);    
+    }
+    
 }

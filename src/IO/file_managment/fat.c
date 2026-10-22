@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stddef.h>
 #include "../../grapics/screen.h"
 
 #pragma pack(push, 1)
@@ -86,12 +87,30 @@ void find_LBA()
 
 void file_lookup()
 {
-    static uint8_t data_cluster[512] __attribute__((aligned(4)));
+    uint8_t *data_cluster = kstack_alloc(512);
     ata_read_sector(root_dir_lba, data_cluster);
 
     kline_break();
-    for  (int i = 0; i < 512; i++)
+    fat16_entry_t *fat_entry_ptr = (fat16_entry_t *) data_cluster;
+    kprint("Name    EXT     attribute   time-date   size");
+    for (int sector = 0, i = 0; sector < 512 || sector != 512; sector += sizeof(fat16_entry_t), i++)
     {
-        kprint_ch_raw(data_cluster[i]);
+        //if (fat_entry_ptr->filename[0] == NULL) {break;} 
+        if (0 != 0) {}
+        else
+        {
+            kline_break();
+            fat_entry_ptr += i;
+            kprint(fat_entry_ptr->filename);
+            if (fat_entry_ptr->attributes == 0x20)
+            {
+                kprint("    file");
+            }
+            else if (fat_entry_ptr->attributes == 0x10)
+            {
+                kprint("    dir");
+            }
+            //kprint(fat_entry_ptr->date);
+        }
     }
 }
