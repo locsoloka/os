@@ -9,3 +9,12 @@ ld -m elf_i386 -T linker.ld -o myos.bin boot.o kernel.o
 
 # 4. Futtatás a Virtuális Gépben (QEMU)!
 qemu-system-i386 -kernel myos.bin
+
+# Disk image csinálás
+dd if=/dev/zero of=disk.img bs=1M count=10
+
+mkfs.vfat -F 16 disk.img
+
+#Disk image mountolása
+
+sudo mount -o loop,rw,uid=$(id -u),gid=$(id -g) disk.img disk_mount/

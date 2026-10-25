@@ -58,6 +58,10 @@ static uint32_t root_dir_lba;
 static uint32_t root_dir_sectors;
 static uint32_t data_lba;
 
+static uint32_t SectorsPerCluster;
+
+static uint32_t Current_Dir;
+
 void file_init()
 {
     ata_read_sector(0, first_cluster_buffer);
@@ -68,7 +72,14 @@ void file_init()
     root_dir_sectors = (cluster_ptr->root_entry_count * 32) / cluster_ptr->bytes_per_sector;
     data_lba = root_dir_lba + root_dir_sectors;
 
+    SectorsPerCluster = cluster_ptr->sectors_per_cluster;
+
     kprint_ch(int_to_char(cluster_ptr->reserved_sectors));
+}
+
+uint32_t calculate_data_lba(uint32_t first_cluster)
+{
+    return data_lba + (first_cluster - 2) * SectorsPerCluster;
 }
 
 void find_LBA()
@@ -82,21 +93,20 @@ void find_LBA()
     {
         kprint_ch(data_cluster[i]);
     }
-    
+    kfree(data_cluster);
 }
 
-void file_lookup()
+void file_lookup_any(uint32_t dir_lba)
 {
     uint8_t *data_cluster = kstack_alloc(512);
-    ata_read_sector(root_dir_lba, data_cluster);
+    ata_read_sector(dir_lba, data_cluster);
 
     kline_break();
     fat16_entry_t *fat_entry_ptr = (fat16_entry_t *) data_cluster;
     kprint("Name    EXT     attribute   time-date   size");
     for (int sector = 0, i = 0; sector < 512 || sector != 512; sector += sizeof(fat16_entry_t), i++)
     {
-        //if (fat_entry_ptr->filename[0] == NULL) {break;} 
-        if (0 != 0) {}
+        if (fat_entry_ptr->filename[0] == NULL) {break;} 
         else
         {
             kline_break();
@@ -110,7 +120,17 @@ void file_lookup()
             {
                 kprint("    dir");
             }
-            //kprint(fat_entry_ptr->date);
         }
     }
+    kfree(data_cluster);
+}
+
+void file_lookup_root()
+{
+    file_lookup_any(root_dir_lba);
+}
+
+void file_lookup_current()
+{
+    file_lookup_current(calculate_data_lba(Current_Dir));
 }

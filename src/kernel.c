@@ -41,7 +41,7 @@ void kernel_main(void) {
     file_init();
     kprint("file_init");
     find_LBA();
-    file_lookup();
+    file_lookup_root();
     char *buffer = kstack_alloc(128);
     while (true)
     {

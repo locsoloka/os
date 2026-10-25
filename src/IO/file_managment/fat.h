@@ -50,5 +50,5 @@ typedef struct {
 
 void file_init(void);
 void find_LBA(void);
-void file_lookup(void);
+void file_lookup_root(void);
 
