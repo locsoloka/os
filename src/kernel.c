@@ -43,6 +43,8 @@ void kernel_main(void) {
     find_LBA();
     file_lookup_root();
     char *buffer = kstack_alloc(128);
+    change_directory("TEST");
+    file_lookup_current();
     while (true)
     {
         kfscan(buffer);

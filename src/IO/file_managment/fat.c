@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include "../../grapics/screen.h"
+#include "../../lib/std_lib/string/string.h"
 
 #pragma pack(push, 1)
 typedef struct
@@ -72,6 +73,8 @@ void file_init()
     root_dir_sectors = (cluster_ptr->root_entry_count * 32) / cluster_ptr->bytes_per_sector;
     data_lba = root_dir_lba + root_dir_sectors;
 
+    Current_Dir = root_dir_lba; // Default value till not changed directory
+
     SectorsPerCluster = cluster_ptr->sectors_per_cluster;
 
     kprint_ch(int_to_char(cluster_ptr->reserved_sectors));
@@ -96,7 +99,7 @@ void find_LBA()
     kfree(data_cluster);
 }
 
-void file_lookup_any(uint32_t dir_lba)
+void file_lookup_any_print(uint32_t dir_lba)
 {
     uint8_t *data_cluster = kstack_alloc(512);
     ata_read_sector(dir_lba, data_cluster);
@@ -116,7 +119,7 @@ void file_lookup_any(uint32_t dir_lba)
             {
                 kprint("    file");
             }
-            else if (fat_entry_ptr->attributes == 0x10)
+            if (fat_entry_ptr->attributes == 0x10)
             {
                 kprint("    dir");
             }
@@ -125,12 +128,53 @@ void file_lookup_any(uint32_t dir_lba)
     kfree(data_cluster);
 }
 
+uint32_t file_lookup_dir_name(uint32_t dir_lba, char *dir_name) // 0 when dir is not found
+{
+    uint8_t *data_cluster = kstack_alloc(512);
+    ata_read_sector(dir_lba, data_cluster);
+
+    kline_break();
+    fat16_entry_t *fat_entry_ptr = (fat16_entry_t *) data_cluster;
+    for (int sector = 0, i = 0; sector < 512 || sector != 512; sector += sizeof(fat16_entry_t), i++)
+    {
+        if (fat_entry_ptr->filename[0] == NULL) {break;} 
+        else
+        {
+            fat_entry_ptr += i;
+            if (fat_entry_ptr->attributes == 0x10)
+            {
+                kprint("dir found");
+                if (strcmp(fat_entry_ptr->filename, dir_name))
+                {
+                    return fat_entry_ptr->first_cluster;
+                }
+                
+            }
+        }
+    }
+    kfree(data_cluster);
+    return 0;
+}
 void file_lookup_root()
 {
-    file_lookup_any(root_dir_lba);
+    file_lookup_any_print(root_dir_lba);
 }
 
 void file_lookup_current()
 {
-    file_lookup_current(calculate_data_lba(Current_Dir));
+    file_lookup_any_print(calculate_data_lba(Current_Dir));
+}
+
+void change_directory(char *dir_name)
+{
+    uint32_t dir_lba = file_lookup_dir_name(Current_Dir, dir_name);
+    if (dir_lba == 0)
+    {
+        kprint("Directory not found");
+        kline_break();
+    }
+    else
+    {
+        Current_Dir  = dir_lba;
+    }
 }

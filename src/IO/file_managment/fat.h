@@ -51,4 +51,8 @@ typedef struct {
 void file_init(void);
 void find_LBA(void);
 void file_lookup_root(void);
+void file_lookup_current();
 
+void file_lookup_any_print(uint32_t dir_lba);
+uint32_t file_lookup_dir_name(uint32_t dir_lba, char *dir_name); // 0 when dir is not found
+void change_directory(char *dir_name);
