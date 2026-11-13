@@ -106,23 +106,32 @@ void file_lookup_any_print(uint32_t dir_lba)
 
     kline_break();
     fat16_entry_t *fat_entry_ptr = (fat16_entry_t *) data_cluster;
+    fat16_entry_t *fat_entry_ptr_current = fat_entry_ptr;
+
     kprint("Name    EXT     attribute   time-date   size");
     for (int sector = 0, i = 0; sector < 512 || sector != 512; sector += sizeof(fat16_entry_t), i++)
     {
-        if (fat_entry_ptr->filename[0] == NULL) {break;} 
+        fat_entry_ptr_current = fat_entry_ptr;
+        fat_entry_ptr_current += i;
+        if (fat_entry_ptr_current->filename[0] == NULL) {break;} 
         else
         {
             kline_break();
-            fat_entry_ptr += i;
-            kprint(fat_entry_ptr->filename);
-            if (fat_entry_ptr->attributes == 0x20)
+            
+            kprint(fat_entry_ptr_current->filename);
+            if (fat_entry_ptr_current->attributes == 0x20)
             {
                 kprint("    file");
             }
-            if (fat_entry_ptr->attributes == 0x10)
+            else if (fat_entry_ptr_current->attributes == 0x10)
             {
                 kprint("    dir");
             }
+            //else
+            //{
+            //    kline_break();
+            //    kprint("Debug not found");
+            //}
         }
     }
     kfree(data_cluster);
@@ -135,18 +144,21 @@ uint32_t file_lookup_dir_name(uint32_t dir_lba, char *dir_name) // 0 when dir is
 
     kline_break();
     fat16_entry_t *fat_entry_ptr = (fat16_entry_t *) data_cluster;
+    fat16_entry_t *fat_entry_ptr_current = fat_entry_ptr;
+
     for (int sector = 0, i = 0; sector < 512 || sector != 512; sector += sizeof(fat16_entry_t), i++)
     {
-        if (fat_entry_ptr->filename[0] == NULL) {break;} 
+        fat_entry_ptr_current = fat_entry_ptr;
+        fat_entry_ptr_current += i;
+
+        if (fat_entry_ptr_current->filename[0] == NULL) {break;} 
         else
         {
-            fat_entry_ptr += i;
-            if (fat_entry_ptr->attributes == 0x10)
+            if (fat_entry_ptr_current->attributes == 0x10)
             {
-                kprint("dir found");
-                if (strcmp(fat_entry_ptr->filename, dir_name))
+                if (strcmp(fat_entry_ptr_current->filename, dir_name))
                 {
-                    return fat_entry_ptr->first_cluster;
+                    return fat_entry_ptr_current->first_cluster;
                 }
                 
             }

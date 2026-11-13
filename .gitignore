@@ -1,3 +1,7 @@
 myos.bin
 disk.img
 disk_mount/
+src/*.o
+src/*/*.o
+src/*/*/*.o
+src/*/*/*/*.o

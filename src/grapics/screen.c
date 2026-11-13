@@ -19,6 +19,7 @@ void clear_screen(void)
         vga[i * 2] = ' ';
         vga[i * 2 + 1] = 0x00;
     }
+    cursor = 0;
 }
 
 void kprint(char *text)
