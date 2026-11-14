@@ -48,11 +48,11 @@ typedef struct {
 } fat16_entry_t;
 #pragma pack(pop)
 
-void file_init(void);
-void find_LBA(void);
-void file_lookup_root(void);
-void file_lookup_current();
-
-void file_lookup_any_print(uint32_t dir_lba);
-uint32_t file_lookup_dir_name(uint32_t dir_lba, char *dir_name); // 0 when dir is not found
-void change_directory(char *dir_name);
+void file_init(void); /*Create the variables. Only needs to be run onced*/
+void find_LBA(void); /* Prints first reversed sector */
+void file_lookup_root(void); /* Prints every file and directory */
+void file_lookup_current(); /*Print every file and directory in the cureent directory*/
+uint32_t file_lookup_dir_name(uint32_t dir_lba, char *dir_name); /* Searches for the name of the dir and returns the first sector
+If it returns 0 Its not there */
+void change_directory(char *dir_name); /* Changes the current directory if found
+else it prints "Directory not found" */

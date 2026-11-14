@@ -6,19 +6,22 @@
 
 #include "commands/shell_commands.h"
 
-typedef int (*cmd_func_t)(int argc, char *argv[]);
+typedef int (*cmd_func_t)(int argc, char *argv[]); // Standard function ptr 
 
 typedef struct {
-    const char *name;      // A parancs neve (pl. "clear")
-    cmd_func_t func;       // A függvény, amit meg kell hívni
-    const char *help;      // Súgó szöveg
+    const char *name;      // A command name for example "clear"
+    cmd_func_t func;       // The function to be called
+    const char *help;      // Help test
 } command_t;
 
+/*{"user input", function ptr, help text}*/
 static const command_t cmd_table[] = 
 {
-  // {"help",  help,  "Megjeleniti a megadott parancsokat"},
-  {"clear", clear, "Clear the screeen"},
-  // {"echo",  echo,  "Kiirja a megadott argumentumokat"},
+  {"clear", clear, "Clear the screeen"}, 
+  
+  {"cd", change_directory_command, "Change directory"},
+  {"ls", list_current_dir, "List every file and directory in current folder"},
+  
   {NULL,    NULL,      NULL}
 };
 

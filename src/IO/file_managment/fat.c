@@ -127,13 +127,9 @@ void file_lookup_any_print(uint32_t dir_lba)
             {
                 kprint("    dir");
             }
-            //else
-            //{
-            //    kline_break();
-            //    kprint("Debug not found");
-            //}
         }
     }
+    kline_break();
     kfree(data_cluster);
 }
 
